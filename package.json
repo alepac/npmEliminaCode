@@ -1,0 +1,20 @@
+{
+  "name": "npm-elimina-code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "nexe index.js --name dist/npm-elimina-code",
+    "start": "node .",
+    "start:server": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alepac",
+  "license": "ISC",
+  "devDependencies": {
+    "nexe": "^3.3.2"
+  },
+  "dependencies": {
+    "xml2js": "^0.4.19"
+  }
+}
