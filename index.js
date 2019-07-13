@@ -16,13 +16,14 @@ fs.watchFile(TEMPLATE_FILE, () => {
     template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 })
 
-
-let actualCounter = "00"
-
 const play = () => spawn( 'cscript.exe', [ './pling.vbs' ] )
 
 play()
-io.on('connection', () => console.log('socket.io client connected'))
+io.on('connection', () => {
+    console.log('socket.io client connected')
+    io.emit('event', actualCounter)
+})
+ 
 app.get('/', (req, res) => {
   res.send(template.replace('--counter--', actualCounter))
 })
@@ -31,13 +32,25 @@ const custom = optionalRequire("./config.json") || {}
 const config = merge({
     remoteIp: "127.0.0.1",
     remotePort: 5001,
-    localPort: 8080
+    localPort: 8080,
+    digits: 2,
+    useHotkeys: false
 }, custom)
+
+let startNumber = "0".repeat(config.digits)
+let actualCounter = startNumber
+let number = 0
+const maxNumber = 10**config.digits
 
 const parseString = require('xml2js').parseString
 
-console.log('Starting client')
 var client = new net.Socket();
+
+const updateElement = (element) => {
+    play()
+    actualCounter = element
+    io.emit('event', actualCounter)
+}
 
 client.on('connect', () => console.log('Connected'))
 
@@ -66,9 +79,7 @@ client.on('data', function(data) {
             } else {
                 result.operations.call.forEach(element => {
                     console.dir(element)
-                    play()
-                    actualCounter = element.$.ticketNumber
-                    io.emit('event', actualCounter)
+                    updateElement(element.$.ticketNumber)
                 })
             }
         })
@@ -80,4 +91,10 @@ client.on('data', function(data) {
 
 server.listen(config.localPort, () => console.log("Http server listening at port ", config.localPort) )
 
-connect()
+if ( config.useHotkeys ) {
+   const hooks = require('./hooks.js')
+   hooks.init(number, maxNumber, startNumber, config.digits, updateElement)
+} else {
+    console.log('Starting client')
+    connect()
+}
