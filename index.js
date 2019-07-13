@@ -1,6 +1,10 @@
 const net = require('net')
 const optionalRequire = require("optional-require")(require)
-const http = require('http')
+const express = require('express')
+const app = express()
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+
 const { merge } = require('lodash/fp')
 const fs = require('fs')
 const spawn = require( 'child_process' ).spawn
@@ -13,15 +17,14 @@ fs.watchFile(TEMPLATE_FILE, () => {
 })
 
 
-let actualCounter = "0"
+let actualCounter = "00"
 
 const play = () => spawn( 'cscript.exe', [ './pling.vbs' ] )
 
 play()
-
-const server = http.createServer(function(req, res) {
-  res.writeHead(200)
-  res.end(template.replace('--counter--', actualCounter))
+io.on('connection', () => console.log('socket.io client connected'))
+app.get('/', (req, res) => {
+  res.send(template.replace('--counter--', actualCounter))
 })
  
 const custom = optionalRequire("./config.json") || {}
@@ -65,6 +68,7 @@ client.on('data', function(data) {
                     console.dir(element)
                     play()
                     actualCounter = element.$.ticketNumber
+                    io.emit('event', actualCounter)
                 })
             }
         })
@@ -73,7 +77,7 @@ client.on('data', function(data) {
     }
 })
 
-console.log("Starting http server at port ", config.localPort)
-server.listen(config.localPort)
+
+server.listen(config.localPort, () => console.log("Http server listening at port ", config.localPort) )
 
 connect()
