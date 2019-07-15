@@ -24,7 +24,7 @@ io.on('connection', () => {
     io.emit('event', actualCounter)
 })
  
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   res.send(template.replace('--counter--', actualCounter))
 })
  
