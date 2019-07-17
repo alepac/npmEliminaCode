@@ -46,6 +46,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io('/');
+      /* document.onkeyup = function(e) {
+        alert(e.which + " key was pressed");
+      } */
+
       socket.on('connect', function(){ console.log('Connected')});
       socket.on('--event--', function(data){
         console.log('Data event: ', data)                

@@ -71,17 +71,17 @@ const updateElement = (element, index) => {
 client.on('connect', () => console.log('Connected'))
 
 const connect = () => {
-    console.log('Connecting to ' + config.remoteIp + ':' +config.remotePort)
+    console.log('Connecting to ' + config.remoteIp + ':' + config.remotePort)
     client.connect(config.remotePort, config.remoteIp)
 }
 
 client.on('error', () => {
-    console.log("Connection error ... trying to reconnect in 1 second")
+    console.log("Connection error ... trying to reconnect in 10 seconds")
     setTimeout(connect, 10000)
 })
 
 client.on('end', (hadError) => {
-    console.log("Connection closed ... trying to reconnect in 1 second")
+    console.log("Connection closed ... trying to reconnect in 10 seconds")
     setTimeout(connect, 10000)
 })
 
