@@ -16,6 +16,7 @@ let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 fs.watchFile(TEMPLATE_FILE, () => {
     console.log("Template changed")
     template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
+    io.emit('reload')
 })
 
 const play = () => spawn( 'cscript.exe', [ './pling.vbs' ] )
@@ -28,9 +29,10 @@ const config = merge({
     remotePort: 5001,
     localPort: 8080,
     digits: 2,
-    useHotkeys: false,    
+    useHotkeys: false,
+    minimumRoomNumber: 4,  
     backgroundColor: {
-        default: "#eaeaea",
+        default: "#808080",
         rooms: []
     },
     textColor: {
@@ -40,7 +42,7 @@ const config = merge({
 }, custom)
 
 let startNumber = "0".repeat(config.digits)
-let actualCounter = Array(3).fill(startNumber) 
+let actualCounter = Array(config.minimumRoomNumber + 1).fill(startNumber) 
 
 io.on('connection', () => {
     console.log('socket.io client connected')
