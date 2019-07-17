@@ -44,8 +44,12 @@ const config = merge({
 let startNumber = "0".repeat(config.digits)
 let actualCounter = Array(config.minimumRoomNumber + 1).fill(startNumber) 
 
-io.on('connection', () => {
+io.on('connection', (ioclient) => {
     console.log('socket.io client connected')
+    ioclient.on('increment', (id) => {
+        console.log(id)
+        updateElement((startNumber + (parseInt(actualCounter[id || 0]) + 1)).slice(-config.digits), id)
+    })
     //io.emit('event', actualCounter)
 })
  
@@ -55,6 +59,7 @@ app.get('*', (req, res) => {
     const textColor = req.query.roomId && config.textColor.rooms[req.query.roomId] || config.textColor.default
     const backgroundColor = req.query.roomId && config.backgroundColor.rooms[req.query.roomId] || config.backgroundColor.default
     res.send(template.replace('--counter--', actualCounter[req.query.roomId || 0])
+        .replace('--id--', req.query.roomId || 0)
         .replace('--event--', roomEvent)
         .replace('--textColor--', textColor)
         .replace('--backgroundColor--', backgroundColor))

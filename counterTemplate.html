@@ -44,16 +44,28 @@
 
     <noscript><meta http-equiv="refresh" content="1"></noscript>
     <script src="/socket.io/socket.io.js"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+
+    <title>Elimina code</title>
+
+  </head>
+
+
+
+  <body>
+    <div class="parent">
+      <div class="child" id="myCounter" onclick="socket.emit('increment',--id--)">--counter--</div>
+    </div>
     <script>
       var socket = io('/');
+      var element = document.getElementById("myCounter");
       /* document.onkeyup = function(e) {
         alert(e.which + " key was pressed");
       } */
 
       socket.on('connect', function(){ console.log('Connected')});
       socket.on('--event--', function(data){
-        console.log('Data event: ', data)                
-        element = document.getElementById("myCounter");
+        console.log('Data event: ', data)                        
         element.classList.add('blinking');
         setTimeout( function() {
           element.textContent=data;
@@ -68,19 +80,6 @@
       });
       socket.on('disconnect', function(){ console.log('Disconnected')});
     </script> 
-
-    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-
-    <title>Elimina code</title>
-
-  </head>
-
-
-
-  <body>
-    <div class="parent">
-      <div class="child" id="myCounter">--counter--</div>
-    </div>
 
   </body>
 
