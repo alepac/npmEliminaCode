@@ -1,8 +1,8 @@
 const ioHook = require('iohook')
 
-
-
-const init = (number, maxNumber, startNumber, digits, updateElement) => {
+const init = (startNumber, digits, updateElement) => {
+    let number = 0
+    const maxNumber = 10**digits
     const numberDigit = (number, digit) => ((number * 10 + (digit)) % maxNumber )
 
     ioHook.on('keydown', event => {
