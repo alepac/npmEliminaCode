@@ -4,13 +4,40 @@
   <head>
 
     <meta charset="UTF-8" />
+    <style>
+      body {
+        background-color: red;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      .parent {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+      }
+      
+      .child {
+        color:white;
+        font-size:38vw;
+        font-family:Impact;
+        text-align: center;
+        margin: auto;
+      } 
+    </style>
 
     <noscript><meta http-equiv="refresh" content="1"></noscript>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io('/');
       socket.on('connect', function(){ console.log('Connected')});
-      socket.on('event', function(data){
+      socket.on('--event--', function(data){
         console.log('Data event: ', data)
         document.getElementById("myCounter").textContent=data;
       });
@@ -25,9 +52,10 @@
 
 
 
-  <body style="background-color: red;">
-
-    <div id="myCounter" style="color:green;font-size:38vw;font-family:monospace">--counter--</div>
+  <body>
+    <div class="parent">
+      <div class="child" id="myCounter">--counter--</div>
+    </div>
 
   </body>
 

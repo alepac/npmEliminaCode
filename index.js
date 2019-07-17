@@ -13,6 +13,7 @@ const TEMPLATE_FILE = 'counterTemplate.html'
  
 let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 fs.watchFile(TEMPLATE_FILE, () => {
+    console.log("Template changed")
     template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 })
 
@@ -25,7 +26,8 @@ io.on('connection', () => {
 })
  
 app.get('*', (req, res) => {
-  res.send(template.replace('--counter--', actualCounter))
+    let roomEvent = 'event' + (req.query.roomId || '')
+    res.send(template.replace('--counter--', actualCounter).replace('--event--',roomEvent))
 })
  
 const custom = optionalRequire("./config.json") || {}

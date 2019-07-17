@@ -2,5 +2,5 @@
     "remoteIp": "127.0.0.1",
     "localPort": 80,
     "digits": 2,
-    "useHotkeys": true
+    "useHotkeys": false
 }
