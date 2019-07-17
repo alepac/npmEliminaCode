@@ -29,7 +29,17 @@
         font-family:Impact;
         text-align: center;
         margin: auto;
-      } 
+      }
+      .blinking{
+          animation:blinkingText 0.5s infinite;
+      }
+      @keyframes blinkingText{
+          0%{ color: --textColor--; }
+          49%{ color: transparent; }
+          50%{ color: transparent; }
+          99%{ color: transparent;  }
+          100%{ color: --textColor--; }
+      }
     </style>
 
     <noscript><meta http-equiv="refresh" content="1"></noscript>
@@ -38,8 +48,19 @@
       var socket = io('/');
       socket.on('connect', function(){ console.log('Connected')});
       socket.on('--event--', function(data){
-        console.log('Data event: ', data)
-        document.getElementById("myCounter").textContent=data;
+        console.log('Data event: ', data)                
+        element = document.getElementById("myCounter");
+        element.classList.add('blinking');
+        setTimeout( function() {
+          element.textContent=data;
+        }, 250);
+        
+        setTimeout( function() {
+          element.classList.remove('blinking')
+        }, 1500);
+      });
+      socket.on('reload', function(data){
+        location.reload();
       });
       socket.on('disconnect', function(){ console.log('Disconnected')});
     </script> 
