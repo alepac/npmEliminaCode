@@ -1,4 +1,5 @@
 {
+    "debug": true,
     "remoteIp": "127.0.0.1",
     "localPort": 80,
     "digits": 4,

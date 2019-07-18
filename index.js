@@ -25,12 +25,13 @@ play()
  
 const custom = optionalRequire("./config.json") || {}
 const config = merge({
+    debug: false,
     remoteIp: "127.0.0.1",
     remotePort: 5001,
     localPort: 8080,
     digits: 2,
     useHotkeys: false,
-    minimumRoomNumber: 4,  
+    minimumRoomNumber: 4,
     backgroundColor: {
         default: "#808080",
         rooms: []
@@ -91,9 +92,10 @@ client.on('end', (hadError) => {
 })
 
 client.on('data', function(data) {
-    const xml = data.toString('utf8').substring(6)
-    // console.log('Received: ' + xml)
-    if (xml) {
+    const datastring = data.toString('utf8')
+    config.debug && console.log('Received: ' + datastring)
+    const xml = datastring.substring(datastring.indexOf('<'))    
+    if (xml && (xml.charAt(0) === '<')) {
         parseString(xml, function (err, result) {
             if(err) {
                 console.log(err)
@@ -105,7 +107,7 @@ client.on('data', function(data) {
             }
         })
     } else {
-        console.log('Empty data')
+        config.debug && console.log('Empty data')
     }
 })
 
