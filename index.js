@@ -14,12 +14,13 @@ const TEMPLATE_FILE = 'counterTemplate.html'
  
 let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 fs.watchFile(TEMPLATE_FILE, () => {
-    console.log("Template changed")
+    debugMe("Template changed")
     template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
     io.emit('reload')
 })
 
 const play = () => spawn( 'cscript.exe', [ './pling.vbs' ] )
+const debugMe = (message) => {config.debug && console.log(message)}
 
 play()
  
@@ -42,16 +43,36 @@ const config = merge({
     }
 }, custom)
 
-let startNumber = "0".repeat(config.digits)
-let actualCounter = Array(config.minimumRoomNumber + 1).fill(startNumber) 
+let paddingNumber = "0".repeat(config.digits)
+let actualCounter = Array(config.minimumRoomNumber + 1).fill(paddingNumber)
+let serviceNumber = 0
+const maxNumber = 10**config.digits
+
+const updateElementWithService = (id) => {
+    updateElement((paddingNumber + serviceNumber).slice(-config.digits), id)
+}
+
+const incrementServiceNumber = (id) => {
+    serviceNumber = (serviceNumber + 1) % maxNumber
+    updateElementWithService(id)
+}
+
+const decrementServiceNumber = (id) => {
+    serviceNumber = serviceNumber > 0 ? (serviceNumber - 1) : (maxNumber - 1)
+    updateElementWithService(id)
+}
+
+const updateServiceNumber = (digit, id) => {
+    serviceNumber = ((serviceNumber * 10 + digit) % maxNumber )
+    updateElementWithService(id)
+}
 
 io.on('connection', (ioclient) => {
-    console.log('socket.io client connected')
+    debugMe('socket.io client connected')
     ioclient.on('increment', (id) => {
-        console.log(id)
-        updateElement((startNumber + (parseInt(actualCounter[id || 0]) + 1)).slice(-config.digits), id)
+        debugMe(id)
+        incrementServiceNumber(id)
     })
-    //io.emit('event', actualCounter)
 })
  
 app.get('*', (req, res) => {
@@ -74,26 +95,26 @@ const updateElement = (element, index) => {
     io.emit('event' + (index || ''), actualCounter[index || 0])
 }
 
-client.on('connect', () => console.log('Connected'))
+client.on('connect', () => debugMe('Connected'))
 
 const connect = () => {
-    console.log('Connecting to ' + config.remoteIp + ':' + config.remotePort)
+    debugMe('Connecting to ' + config.remoteIp + ':' + config.remotePort)
     client.connect(config.remotePort, config.remoteIp)
 }
 
 client.on('error', () => {
-    console.log("Connection error ... trying to reconnect in 10 seconds")
+    debugMe("Connection error ... trying to reconnect in 10 seconds")
     setTimeout(connect, 10000)
 })
 
 client.on('end', (hadError) => {
-    console.log("Connection closed ... trying to reconnect in 10 seconds")
+    debugMe("Connection closed ... trying to reconnect in 10 seconds")
     setTimeout(connect, 10000)
 })
 
 client.on('data', function(data) {
     const datastring = data.toString('utf8')
-    config.debug && console.log('Received: ' + datastring)
+    debugMe('Received: ' + datastring)
     const xml = datastring.substring(datastring.indexOf('<'))    
     if (xml && (xml.charAt(0) === '<')) {
         parseString(xml, function (err, result) {
@@ -107,17 +128,17 @@ client.on('data', function(data) {
             }
         })
     } else {
-        config.debug && console.log('Empty data')
+        debugMe('Empty data')
     }
 })
 
 
-server.listen(config.localPort, () => console.log("Http server listening at port ", config.localPort) )
+server.listen(config.localPort, () => debugMe("Http server listening at port " + config.localPort) )
 
 if ( config.useHotkeys ) {
    const hooks = require('./hooks.js')
-   hooks.init(startNumber, config.digits, updateElement)
+   hooks.init(debugMe, incrementServiceNumber, decrementServiceNumber, updateServiceNumber)
 } else {
-    console.log('Starting client')
+    debugMe('Starting client')
     connect()
 }

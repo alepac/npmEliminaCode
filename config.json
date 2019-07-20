@@ -3,7 +3,7 @@
     "remoteIp": "127.0.0.1",
     "localPort": 80,
     "digits": 4,
-    "useHotkeys": false,
+    "useHotkeys": true,
     "backgroundColor": {
         "default": "#808080",
         "rooms": [ "", "#0c78b3", "#b11a1a", "#147434", "#f9b233" ]
