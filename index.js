@@ -11,6 +11,8 @@ const { merge } = require('lodash/fp')
 const fs = require('fs')
 const spawn = require( 'child_process' ).spawn
 
+const hooks = require('./hooks.js')
+
 const TEMPLATE_FILE = 'counterTemplate.html'
  
 let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
@@ -27,7 +29,7 @@ play()
  
 const custom = optionalRequire("./config.json") || {}
 const config = merge({
-    debug: false,
+    debug: true,
     remoteIp: "127.0.0.1",
     remotePort: 5001,
     localPort: 8080,
@@ -135,13 +137,21 @@ client.on('data', function(data) {
     }
 })
 
+const startHotkeys = () => {
+    hooks.init(debugMe, incrementServiceNumber, decrementServiceNumber, updateServiceNumber)
+}
 
-server.listen(config.localPort, () => debugMe("Http server listening at port " + config.localPort) )
-
-if ( config.useHotkeys ) {
-   const hooks = require('./hooks.js')
-   hooks.init(debugMe, incrementServiceNumber, decrementServiceNumber, updateServiceNumber)
+if(process.argv.length > 2) {
+    startHotkeys()
+    debugMe("Dry Runned")
+    process.exit(0)
 } else {
-    debugMe('Starting client')
-    connect()
+    server.listen(config.localPort, () => debugMe("Http server listening at port " + config.localPort) )
+
+    if ( config.useHotkeys ) {
+        startHotkeys()
+    } else {
+        debugMe('Starting client')
+        connect()
+    }
 }

@@ -28,4 +28,8 @@ const init = (debug, incrementServiceNumber, decrementServiceNumber, updateServi
     ioHook.start()
 }
 
-module.exports.init = init
+const stop = () => {
+    ioHook.stop()
+}
+
+module.exports = { init: init, stop: stop }
