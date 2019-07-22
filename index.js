@@ -2,6 +2,7 @@ const net = require('net')
 const optionalRequire = require("optional-require")(require)
 const express = require('express')
 const app = express()
+const path = require('path')
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 const parseString = require('xml2js').parseString
@@ -74,17 +75,19 @@ io.on('connection', (ioclient) => {
         incrementServiceNumber(id)
     })
 })
- 
+
+app.use(express.static(path.join(__dirname, 'public')))
+
 app.get('*', (req, res) => {
     console.dir(req.query)
     const roomEvent = 'event' + (req.query.roomId || '')
     const textColor = req.query.roomId && config.textColor.rooms[req.query.roomId] || config.textColor.default
     const backgroundColor = req.query.roomId && config.backgroundColor.rooms[req.query.roomId] || config.backgroundColor.default
-    res.send(template.replace('--counter--', actualCounter[req.query.roomId || 0])
-        .replace('--id--', req.query.roomId || 0)
-        .replace('--event--', roomEvent)
-        .replace('--textColor--', textColor)
-        .replace('--backgroundColor--', backgroundColor))
+    res.send(template.replace(/--counter--/g, actualCounter[req.query.roomId || 0])
+        .replace(/--id--/g, req.query.roomId || 0)
+        .replace(/--event--/g, roomEvent)
+        .replace(/--textColor--/g, textColor)
+        .replace(/--backgroundColor--/g, backgroundColor))
 })
 
 var client = new net.Socket();

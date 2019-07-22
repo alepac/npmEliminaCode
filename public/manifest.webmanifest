@@ -1,0 +1,19 @@
+{
+    "short_name": "Eliminacode",
+    "name": "Elimincacide",
+    "icons": [
+      {
+        "src": "/images/Enycs_192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/images/Enycs_512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "background_color": "#232323",
+    "display": "fullscreen",
+    "theme_color": "#232323"
+}
