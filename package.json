@@ -17,7 +17,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "iohook": "^0.5.1",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "optional-require": "^1.0.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
