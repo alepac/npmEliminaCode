@@ -1,12 +1,19 @@
 {
     "debug": true,
     "remoteIp": "127.0.0.1",
-    "localPort": 80,
+    "localPort": 8080,
     "digits": 4,
     "useHotkeys": true,
+    "useBrowserHotkeys": true,
     "backgroundColor": {
         "default": "#808080",
-        "rooms": [ "", "#0c78b3", "#b11a1a", "#147434", "#f9b233" ]
+        "rooms": [
+            "",
+            "#0c78b3",
+            "#b11a1a",
+            "#147434",
+            "#f9b233"
+        ]
     },
     "textColor": {
         "default": "#ffffff",

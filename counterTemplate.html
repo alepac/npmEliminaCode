@@ -1,93 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
+<head>
 
-    <meta charset="UTF-8" />
-    <style>
-      body {
-        background-color: --backgroundColor--;
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      background-color: --backgroundColor--;
+    }
+
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    .parent {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+    }
+
+    .child {
+      color: --textColor--;
+      font-size: 38vw;
+      font-family: Impact;
+      text-align: center;
+      margin: auto;
+    }
+
+    .blinking {
+      animation: blinkingText 0.5s infinite;
+    }
+
+    @keyframes blinkingText {
+      0% {
+        color: --textColor--;
       }
 
-      * {
-        padding: 0;
-        margin: 0;
+      49% {
+        color: transparent;
       }
 
-      .parent {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
+      50% {
+        color: transparent;
       }
-      
-      .child {
-        color:--textColor--;
-        font-size:38vw;
-        font-family:Impact;
-        text-align: center;
-        margin: auto;
+
+      99% {
+        color: transparent;
       }
-      .blinking{
-          animation:blinkingText 0.5s infinite;
+
+      100% {
+        color: --textColor--;
       }
-      @keyframes blinkingText{
-          0%{ color: --textColor--; }
-          49%{ color: transparent; }
-          50%{ color: transparent; }
-          99%{ color: transparent;  }
-          100%{ color: --textColor--; }
-      }
-    </style>
+    }
+  </style>
 
-    <noscript><meta http-equiv="refresh" content="1"></noscript>
-    <script src="/socket.io/socket.io.js"></script>
-    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-    <link rel="manifest" href="/manifest.webmanifest" />
+  <noscript>
+    <meta http-equiv="refresh" content="1">
+  </noscript>
+  <script src="/socket.io/socket.io.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+  <link rel="manifest" href="/manifest.webmanifest" />
 
-    <meta name="theme-color" content="--backgroundColor--" />
-    <meta name="msapplication-navbutton-color" content="--backgroundColor--" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="--backgroundColor--" />
+  <meta name="theme-color" content="--backgroundColor--" />
+  <meta name="msapplication-navbutton-color" content="--backgroundColor--" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="--backgroundColor--" />
 
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-    <title>Elimina code</title>
+  <title>Elimina code</title>
 
-  </head>
+</head>
 
 
 
-  <body>
-    <div class="parent">
-      <div class="child" id="myCounter" onclick="socket.emit('increment',--id--)">--counter--</div>
-    </div>
-    <script>
-      var socket = io('/');
-      var element = document.getElementById("myCounter");
-      /* document.onkeyup = function(e) {
-        alert(e.which + " key was pressed");
-      } */
+<body>
+  <div class="parent">
+    <div class="child" id="myCounter">--counter--</div>
+  </div>
+  <script>
+    const socket = io('/');
+    const element = document.getElementById("myCounter");
+    /* document.onkeyup = function(e) {
+      alert(e.which + " key was pressed");
+    } */
+    document.addEventListener('contextmenu', function (e) {
+      socket.emit('decrement', --id--);
+      e.preventDefault();
+    }, false);
 
-      socket.on('connect', function(){ console.log('Connected')});
-      socket.on('--event--', function(data){
-        console.log('Data event: ', data)                        
-        element.classList.add('blinking');
-        setTimeout( function() {
-          element.textContent=data;
-        }, 250);
-        
-        setTimeout( function() {
-          element.classList.remove('blinking')
-        }, 1500);
-      });
-      socket.on('reload', function(data){
-        location.reload();
-      });
-      socket.on('disconnect', function(){ console.log('Disconnected')});
-    </script> 
+    document.addEventListener('click', function (e) {
+      socket.emit('increment', --id--);
+      e.preventDefault();
+    }, false);
 
-  </body>
+    document.addEventListener('auxclick', function (e) {
+      if (e.button == 1)
+        socket.emit('reset', --id--);
+      e.preventDefault();
+    }, false);
+
+    socket.on('connect', function () { console.log('Connected') });
+    socket.on('--event--', function (data) {
+      console.log('Data event: ', data)
+      element.classList.add('blinking');
+      setTimeout(function () {
+        element.textContent = data;
+      }, 250);
+
+      setTimeout(function () {
+        element.classList.remove('blinking')
+      }, 1500);
+    });
+    socket.on('reload', function (data) {
+      location.reload();
+    });
+    socket.on('disconnect', function () { console.log('Disconnected') });
+  </script>
+
+</body>
 
 </html>

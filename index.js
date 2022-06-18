@@ -9,12 +9,12 @@ const parseString = require('xml2js').parseString
 
 const { merge } = require('lodash/fp')
 const fs = require('fs')
-const spawn = require( 'child_process' ).spawn
+const spawn = require('child_process').spawn
 
 const hooks = require('./hooks.js')
 
 const TEMPLATE_FILE = 'counterTemplate.html'
- 
+
 let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
 fs.watchFile(TEMPLATE_FILE, () => {
     debugMe("Template changed")
@@ -22,11 +22,11 @@ fs.watchFile(TEMPLATE_FILE, () => {
     io.emit('reload')
 })
 
-const play = () => spawn( 'cscript.exe', [ './pling.vbs' ] )
-const debugMe = (message) => {config.debug && console.log(message)}
+const play = () => (process.platform == "win32") ? spawn('cscript.exe', ['./pling.vbs']) : false;
+const debugMe = (message) => { config.debug && console.log(message) }
 
 play()
- 
+
 const custom = optionalRequire("./config.json") || {}
 const config = merge({
     debug: true,
@@ -35,6 +35,7 @@ const config = merge({
     localPort: 8080,
     digits: 2,
     useHotkeys: false,
+    useBrowserHotkeys: false,
     minimumRoomNumber: 4,
     backgroundColor: {
         default: "#808080",
@@ -49,7 +50,7 @@ const config = merge({
 let paddingNumber = "0".repeat(config.digits)
 let actualCounter = Array(config.minimumRoomNumber + 1).fill(paddingNumber)
 let serviceNumber = 0
-const maxNumber = 10**config.digits
+const maxNumber = 10 ** config.digits
 
 const updateElementWithService = (id) => {
     updateElement((paddingNumber + serviceNumber).slice(-config.digits), id)
@@ -65,8 +66,13 @@ const decrementServiceNumber = (id) => {
     updateElementWithService(id)
 }
 
+const resetServiceNumber = (id) => {
+    serviceNumber = 0
+    updateElementWithService(id)
+}
+
 const updateServiceNumber = (digit, id) => {
-    serviceNumber = ((serviceNumber * 10 + digit) % maxNumber )
+    serviceNumber = ((serviceNumber * 10 + digit) % maxNumber)
     updateElementWithService(id)
 }
 
@@ -75,6 +81,14 @@ io.on('connection', (ioclient) => {
     ioclient.on('increment', (id) => {
         debugMe(id)
         incrementServiceNumber(id)
+    })
+    ioclient.on('decrement', (id) => {
+        debugMe(id)
+        decrementServiceNumber(id)
+    })
+    ioclient.on('reset', (id) => {
+        debugMe(id)
+        resetServiceNumber(id)
     })
 })
 
@@ -117,13 +131,13 @@ client.on('end', (hadError) => {
     setTimeout(connect, 10000)
 })
 
-client.on('data', function(data) {
+client.on('data', (data) => {
     const datastring = data.toString('utf8')
     debugMe('Received: ' + datastring)
-    const xml = datastring.substring(datastring.indexOf('<'))    
+    const xml = datastring.substring(datastring.indexOf('<'))
     if (xml && (xml.charAt(0) === '<')) {
-        parseString(xml, function (err, result) {
-            if(err) {
+        parseString(xml, (err, result) => {
+            if (err) {
                 console.log(err)
             } else {
                 result.operations.call.forEach(element => {
@@ -137,19 +151,21 @@ client.on('data', function(data) {
     }
 })
 
-const startHotkeys = () => {
+const startHotkeys = () =>
     hooks.init(debugMe, incrementServiceNumber, decrementServiceNumber, updateServiceNumber)
-}
 
-if(process.argv.length > 2) {
+
+if (process.argv.length > 2) {
     startHotkeys()
     debugMe("Dry Runned")
     process.exit(0)
 } else {
-    server.listen(config.localPort, () => debugMe("Http server listening at port " + config.localPort) )
+    server.listen(config.localPort, () => debugMe("Http server listening at port " + config.localPort))
 
-    if ( config.useHotkeys ) {
+    if (config.useHotkeys) {
         startHotkeys()
+    } else if (config.useBrowserHotkeys) {
+        debugMe('Using browser hotkeys')
     } else {
         debugMe('Starting client')
         connect()

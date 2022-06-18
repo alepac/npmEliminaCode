@@ -14,9 +14,9 @@ const init = (debug, incrementServiceNumber, decrementServiceNumber, updateServi
                 decrementServiceNumber()
                 break;
             default:
-                if( event.rawcode >= 48 && event.rawcode <= 57) {
+                if (event.rawcode >= 48 && event.rawcode <= 57) {
                     updateServiceNumber(event.rawcode - 48)
-                } else if( event.rawcode >= 96 && event.rawcode <= 105) {
+                } else if (event.rawcode >= 96 && event.rawcode <= 105) {
                     updateServiceNumber(event.rawcode - 96)
                 }
                 else return
@@ -32,4 +32,4 @@ const stop = () => {
     ioHook.stop()
 }
 
-module.exports = { init: init, stop: stop }
+module.exports = { init, stop }
