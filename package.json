@@ -15,7 +15,7 @@
     "nexe": "^3.3.2"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "iohook": "^0.5.1",
     "lodash": "^4.17.14",
     "optional-require": "^1.0.0",
